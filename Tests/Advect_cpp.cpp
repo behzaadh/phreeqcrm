@@ -187,7 +187,7 @@ int Advect_cpp()
 			oss << "Number of components for transport:               " << phreeqc_rm.GetComponentCount() << "\n";
 			oss << "Partioning of UZ solids:                          " << phreeqc_rm.GetPartitionUZSolids() << "\n";
 			oss << "Error handler mode:                               " << phreeqc_rm.GetErrorHandlerMode() << "\n";
-			phreeqc_rm.OutputMessage(oss.str());
+            phreeqc_rm.OutputMessage(oss.str());
 		}
 		example_selected_output(phreeqc_rm);
 
