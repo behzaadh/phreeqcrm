@@ -4245,6 +4245,14 @@ status = phreeqc_rm.RunCells();
 Called by root, workers must be in the loop of @ref MpiWorker.
  */
 	IRM_RESULT                                SetConcentrations(const std::vector< double > &c);
+
+    const int                                 GetPPAssemblageCount(void);
+
+    std::vector< std::string >                GetPPAssemblageComps(void);
+
+    IRM_RESULT                                SetPPAssemblageMoles(const std::vector< double > &moles);
+
+    IRM_RESULT                                SetPPAssemblageSI(const std::vector< double > &si);
 /**
 Select the current selected output by user number. The user may define multiple SELECTED_OUTPUT
 data blocks for the workers. A user number is specified for each data block. The value of

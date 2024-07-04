@@ -2439,6 +2439,79 @@ RM_SetConcentrations(int id, double *t)
 	}
 	return IRM_BADINSTANCE;
 }
+/* ---------------------------------------------------------------------- */
+int
+RM_GetPPAssemblageCount(int id)
+/* ---------------------------------------------------------------------- */
+{
+    PhreeqcRM * Reaction_module_ptr = PhreeqcRM::GetInstance(id);
+    if (Reaction_module_ptr)
+    {
+        return (Reaction_module_ptr->GetPPAssemblageCount());
+    }
+    return IRM_BADINSTANCE;
+}
+/* ---------------------------------------------------------------------- */
+IRM_RESULT
+RM_GetPPAssemblageComp(int id, int num, char *comp_name, int l1)
+/* ---------------------------------------------------------------------- */
+{
+    PhreeqcRM * Reaction_module_ptr = PhreeqcRM::GetInstance(id);
+    if (Reaction_module_ptr)
+    {
+        if (comp_name != NULL)
+        {
+            //if (l1 >= 0)
+            if (l1 > 0 && num >= 0 && num < Reaction_module_ptr->GetPPAssemblageCount())
+            {
+                strncpy(comp_name, Reaction_module_ptr->GetPPAssemblageComps()[num].c_str(), l1);
+                return IRM_OK;
+            }
+        }
+        return IRM_INVALIDARG;
+    }
+    return IRM_BADINSTANCE;
+}
+/* ---------------------------------------------------------------------- */
+IRM_RESULT
+RM_SetPPAssemblageMoles(int id, double *t)
+/* ---------------------------------------------------------------------- */
+{
+    PhreeqcRM * Reaction_module_ptr = PhreeqcRM::GetInstance(id);
+    if (Reaction_module_ptr)
+    {
+        if (t != NULL)
+        {
+            std::vector<double> c_vector;
+            c_vector.resize(Reaction_module_ptr->GetGridCellCount() * Reaction_module_ptr->GetPPAssemblageCount());
+            memcpy(&c_vector.front(), t, c_vector.size() * sizeof(double));
+            return Reaction_module_ptr->SetPPAssemblageMoles(c_vector);
+        }
+        return IRM_INVALIDARG;
+    }
+    return IRM_BADINSTANCE;
+}
+
+
+/* ---------------------------------------------------------------------- */
+IRM_RESULT
+RM_SetPPAssemblageSI(int id, double *t)
+/* ---------------------------------------------------------------------- */
+{
+    PhreeqcRM * Reaction_module_ptr = PhreeqcRM::GetInstance(id);
+    if (Reaction_module_ptr)
+    {
+        if (t != NULL)
+        {
+            std::vector<double> c_vector;
+            c_vector.resize(Reaction_module_ptr->GetGridCellCount() * Reaction_module_ptr->GetPPAssemblageCount());
+            memcpy(&c_vector.front(), t, c_vector.size() * sizeof(double));
+            return Reaction_module_ptr->SetPPAssemblageSI(c_vector);
+        }
+        return IRM_INVALIDARG;
+    }
+    return IRM_BADINSTANCE;
+}
 
 /* ---------------------------------------------------------------------- */
 IRM_RESULT 

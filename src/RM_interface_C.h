@@ -4788,6 +4788,19 @@ status = RM_GetSolutionVolume(id, volume);     // Solution volume after reaction
 Called by root, workers must be in the loop of @ref RM_MpiWorker.
  */
 IRM_DLL_EXPORT IRM_RESULT RM_SetConcentrations(int id, double *c);
+/*
+ * CUSTOM FUNCTIONS
+ * */
+IRM_DLL_EXPORT int RM_GetPPAssemblageCount(int id);
+
+IRM_DLL_EXPORT IRM_RESULT RM_GetPPAssemblageComp(int id, int num, char *comp_name, int l1);
+
+IRM_DLL_EXPORT IRM_RESULT RM_SetPPAssemblageMoles(int id, double *c);
+
+IRM_DLL_EXPORT IRM_RESULT RM_SetPPAssemblageSI(int id, double *c);
+/*
+ * END OF CUSTOM FUNCTIONS
+ * */
 /**
 Select the current selected output by user number. The user may define multiple SELECTED_OUTPUT
 data blocks for the workers. A user number is specified for each data block. The value of

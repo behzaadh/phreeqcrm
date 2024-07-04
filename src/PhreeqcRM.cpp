@@ -520,8 +520,10 @@ PhreeqcRM::CellInitialize(
 
 			mx.Multiply(porosity_factor[this->units_PPassemblage]);
 			cxxPPassemblage cxxentity(phreeqc_bin->Get_PPassemblages(), mx,
-				n_user_new);
-			initial_bin.Set_PPassemblage(n_user_new, &cxxentity);
+                n_user_new);
+            // auto comps = cxxentity.Get_pp_assemblage_comps();
+            // comps["Anhydrite"].Set_moles(5);
+            initial_bin.Set_PPassemblage(n_user_new, &cxxentity);
 		}
 	}
 	/*
@@ -11110,6 +11112,73 @@ PhreeqcRM::SetConcentrations(const std::vector<double> &t)
 	this->UpdateBMI(RMVARS::Concentrations);
 	return this->ReturnHandler(return_value, "PhreeqcRM::SetConcentrations");
 }
+/* ---------------------------------------------------------------------- */
+const int
+PhreeqcRM::GetPPAssemblageCount(void)
+/* ---------------------------------------------------------------------- */
+{
+    auto bin = phreeqc_bin->Get_PPassemblage(1);
+    return bin->Get_pp_assemblage_comps().size();
+}
+
+/* ---------------------------------------------------------------------- */
+std::vector< std::string >
+PhreeqcRM::GetPPAssemblageComps(void)
+/* ---------------------------------------------------------------------- */
+{
+    std::vector< std::string > comps;
+    auto bin = phreeqc_bin->Get_PPassemblage(1);
+    for (const auto &name : bin->Get_pp_assemblage_comps())
+    {
+        comps.push_back(name.first);
+    }
+    return comps;
+}
+
+/* ---------------------------------------------------------------------- */
+IRM_RESULT
+PhreeqcRM::SetPPAssemblageMoles(const std::vector<double> &moles)
+/* ---------------------------------------------------------------------- */
+{
+    IRM_RESULT return_value = IRM_OK;
+    auto bin = phreeqc_bin->Get_PPassemblages();
+    int i = 0;
+    for (auto &pp : bin)
+    {
+        int j = 0;
+        for (auto &comp : pp.second.Get_pp_assemblage_comps())
+        {
+            comp.second.Set_moles(moles[nxyz * j + i]);
+            j++;
+        }
+        i++;
+        phreeqc_bin->Set_PPassemblage(i, bin.find(i)->second);
+    }
+    return return_value;
+}
+
+/* ---------------------------------------------------------------------- */
+IRM_RESULT
+PhreeqcRM::SetPPAssemblageSI(const std::vector<double> &si)
+/* ---------------------------------------------------------------------- */
+{
+    IRM_RESULT return_value = IRM_OK;
+    auto bin = phreeqc_bin->Get_PPassemblages();
+    int i = 0;
+    for (auto &pp : bin)
+    {
+        int j = 0;
+        for (auto &comp : pp.second.Get_pp_assemblage_comps())
+        {
+            comp.second.Set_si(si[nxyz * j + i]);
+            comp.second.Set_si_org(si[nxyz * j + i]);
+            j++;
+        }
+        i++;
+        phreeqc_bin->Set_PPassemblage(i, bin.find(i)->second);
+    }
+    return return_value;
+}
 #ifdef ORIG
 /* ---------------------------------------------------------------------- */
 IRM_RESULT
@@ -12231,7 +12300,7 @@ PhreeqcRM::SetTemperature(const std::vector<double> &t)
 			{
 				// j is count_chem number
 				int i = this->backward_mapping[j][0];
-				cxxSolution *soln_ptr = this->GetWorkers()[n]->Get_solution(j);
+                cxxSolution *soln_ptr = this->GetWorkers()[n]->Get_solution(j);
 				if (soln_ptr)
 				{
 					soln_ptr->Set_tc(tempc_root[i]);

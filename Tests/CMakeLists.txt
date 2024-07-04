@@ -113,6 +113,9 @@ configure_file(units.pqi units.pqi COPYONLY)
 # Tests/units.pqi
 configure_file(gas.pqi gas.pqi COPYONLY)
 
+# Tests/barite.pqi
+configure_file(barite.pqi barite.pqi COPYONLY)
+
 # test executable
 add_executable(TestRM)
 
@@ -129,6 +132,7 @@ target_sources(TestRM PRIVATE
   SimpleAdvect_cpp.cpp
   Species_c.c
   Species_cpp.cpp
+  Barite_c.c
   TestAllMethods_c.c
   TestAllMethods_cpp.cpp
 )

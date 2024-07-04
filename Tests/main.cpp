@@ -18,6 +18,7 @@ extern void Gas_f90(void);
 extern void SimpleAdvect_c(void);
 extern void SimpleAdvect_f90(void);
 extern void Species_c(void);
+extern void Barite_c(void);
 extern void Species_f90(void);
 extern void TestAllMethods_c(void);
 extern void TestAllMethods_f90(void);
@@ -43,7 +44,7 @@ extern void WriteYAMLFile_cpp_test();
 int main(int argc, char* argv[])
 {
 	int mpi_tasks;
-	int mpi_myself;
+    int mpi_myself;;
 
 #if defined(USE_MPI)
 	if (MPI_Init(&argc, &argv) != MPI_SUCCESS)
@@ -95,7 +96,9 @@ int main(int argc, char* argv[])
 	if (root) std::cerr << "Done Species_cpp.====================================" << std::endl;
 	Species_c();
 	if (root) std::cerr << "Done Species_c.======================================" << std::endl;
-	Gas_cpp();
+    Barite_c();
+    if (root) std::cerr << "Done Barite_c.======================================" << std::endl;
+    Gas_cpp();
 	if (root) std::cerr << "Done Gas_ccp.========================================" << std::endl;
 	Gas_c();
 	if (root) std::cerr << "Done Gas_c.==========================================" << std::endl;
