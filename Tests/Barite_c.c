@@ -24,8 +24,12 @@ void Barite_c()
     for (int i = 0; i < nCells; i++)
     {
         ic1[i] = 1;       // Solution 1
-        ic1[nCells + i] = 1;      // Equilibrium phases none
-        ic1[2 * nCells + i] = -1;       // Exchange 1
+        // if (i > 5) {
+            // ic1[nCells + i] = 2;
+        // } else {
+            ic1[nCells + i] = i+1;      // Equilibrium phases 1
+        // }
+        ic1[2 * nCells + i] = -1;       // Exchange none
         ic1[3 * nCells + i] = -1;      // Surface none
         ic1[4 * nCells + i] = -1;      // Gas phase none
         ic1[5 * nCells + i] = -1;      // Solid solutions none
@@ -46,25 +50,36 @@ void Barite_c()
         f1[6 * nCells + i] = 1.0;      // Mixing fraction ic1 Kinetics
     }
 
-    status = RM_InitialPhreeqc2Module(id, ic1, ic2, f1);
-    double assemblageMole[] = {1,2,3,4,5,6,7,8,9,10,
-        1,2,3,4,5,6,7,8,9,10,
-        1,2,3,4,5,6,7,8,9,10,
-        1,2,3,4,5,6,7,8,9,10,
-        1,2,3,4,5,6,7,8,9,10};
     int nPPAssemblage = RM_GetPPAssemblageCount(id);
+    fprintf(stderr, "Assemblage components:\n");
     for (int i = 0; i < nPPAssemblage; ++i) {
         char str[100];
         status = RM_GetPPAssemblageComp(id, i, str, 100);
-        fprintf(stderr, "%d: %s", i, str);
+        fprintf(stderr, "\t%d: %s\n", i, str);
     }
+
+    double assemblageMole[] = {1,2,3,4,5,6,7,8,9,10,
+                               1,2,3,4,5,6,7,8,9,10,
+                               10,2,3,4,5,6,7,8,9,10,
+                               1,2,3,4,5,6,7,8,9,10,
+                               1,2,3,4,5,6,7,8,9,10};
     status = RM_SetPPAssemblageMoles(id, assemblageMole);
     double assemblageSI[] = {0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,
                              0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,
-                             0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,
+                             1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,
                              0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,
                              0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1};
     status = RM_SetPPAssemblageSI(id, assemblageSI);
+
+    status = RM_InitialPhreeqc2Module(id, ic1, ic2, f1);
+
+    // int nPPAssemblage = RM_GetPPAssemblageCount(id);
+    // fprintf(stderr, "Assemblage components:\n");
+    // for (int i = 0; i < nPPAssemblage; ++i) {
+    //     char str[100];
+    //     status = RM_GetPPAssemblageComp(id, i, str, 100);
+    //     fprintf(stderr, "\t%d: %s\n", i, str);
+    // }
 
     int ncomps = RM_FindComponents(id);
     char str[100];
@@ -168,32 +183,43 @@ void Barite_c()
         for (int j = 0; j < col; j++)
         {
             status = RM_GetSelectedOutputHeading(id, j, heading, 100);
-            fprintf(stderr, "          %2d %10s: %10.4f\n", j, heading, selected_out[j * nCells + i]);
+            fprintf(stderr, "\t%2d %10s: %10.4f\n", j, heading, selected_out[j * nCells + i]);
         }
     }
     double* c_out_comps = (double*)malloc((size_t)(ncomps * nCells * sizeof(double)));
-    status = RM_GetConcentrations(id, c_out_comps);
+    status = RM_GetConcentrations(id, c_out_comps);    
 
+    fprintf(stderr, "---------- Components ----------\n");
 
-    for (int j = 0; j < ncomps*nCells; j++)
+    int k=0;
+    for (int j = 0; j < ncomps; j++)
     {
-        fprintf(stderr, "     c_out_comps: %10.4f\n", c_out_comps[j]);
+        status = RM_GetComponent(id, j, str, 100);
+        fprintf(stderr, "%s\n", str);
+        for (int i = 0; i < nCells; i++)
+        {
+            fprintf(stderr, "     Cell %d: %10.4f\n", i, c_out_comps[k]);
+            k++;
+        }
     }
 
     int nspecies = RM_GetSpeciesCount(id);
 
-    for (int i = 0; i < nspecies; i++)
-    {
-        status = RM_GetSpeciesName(id, i, str, 100);
-        snprintf(str1, sizeof(str1), "%s\n", str);
-        status = RM_OutputMessage(id, str1);
-    }
     double* species_c= (double*)malloc((size_t)(nspecies * nCells * sizeof(double)));
     status = RM_GetSpeciesConcentrations(id, species_c);
 
-    for (int j = 0; j < nspecies*nCells; j++)
+    fprintf(stderr, "---------- Species ----------\n");
+
+    k=0;
+    for (int j = 0; j < nspecies; j++)
     {
-        fprintf(stderr, "     species_c: %10.4f\n", species_c[j]);
+        status = RM_GetSpeciesName(id, j, str, 100);
+        fprintf(stderr, "%s\n", str);
+        for (int i = 0; i < nCells; i++)
+        {
+            fprintf(stderr, "     Cell %d: %10.4f\n", i, species_c[k]);
+            k++;
+        }
     }
 
     status = RM_Destroy(id);

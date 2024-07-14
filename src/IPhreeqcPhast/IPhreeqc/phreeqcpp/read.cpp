@@ -64,7 +64,7 @@ read_input(void)
 /*
  *  Initialize use and save pointers
  */
-	use.init();
+    use.init();
 
 	save.solution = FALSE;
 	save.mix = FALSE;
@@ -89,7 +89,7 @@ read_input(void)
 	}
 
 	for (;;)
-	{
+    {
 		if (next_keyword > 0)
 		{
 			if (next_keyword != Keywords::KEY_DATABASE && !reading_database())
@@ -4137,7 +4137,7 @@ read_pp_assemblage(void)
 	temp_pp_assemblage.read_number_description(cptr);
 	n_user = temp_pp_assemblage.Get_n_user();
 	cxxPPassemblageComp *comp = NULL;
-	std::map<std::string, cxxPPassemblageComp> comps;
+    std::map<std::string, cxxPPassemblageComp> comps;
 	temp_pp_assemblage.Set_new_def(true);
 	/*
 	 *   Set use data to first read

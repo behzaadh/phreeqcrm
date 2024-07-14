@@ -1093,6 +1093,7 @@ public:
 	std::map<int, cxxGasPhase>& Get_Rxn_gas_phase_map() { return this->Rxn_gas_phase_map; }
 	std::map<int, cxxKinetics>& Get_Rxn_kinetics_map() { return this->Rxn_kinetics_map; }
 	std::map<int, cxxPPassemblage>& Get_Rxn_pp_assemblage_map() { return this->Rxn_pp_assemblage_map; }
+    void Set_Rxn_pp_assemblage_map(const std::map<int, cxxPPassemblage>& Rxn_pp_assemblage_map);
 	std::map<int, cxxSSassemblage>& Get_Rxn_ss_assemblage_map() { return this->Rxn_ss_assemblage_map; }
 	std::map<int, cxxSurface>& Get_Rxn_surface_map() { return this->Rxn_surface_map; }
 	std::map<int, cxxMix>& Get_Rxn_mix_map() { return this->Rxn_mix_map; }

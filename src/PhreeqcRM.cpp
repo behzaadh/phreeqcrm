@@ -3127,7 +3127,7 @@ PhreeqcRM::FindComponents(void)
 					}
 				}
 				// add new equilibrium phases to set
-				std::list<std::string>::const_iterator cit = phast_iphreeqc_worker->GetEquilibriumPhasesList().begin();
+                std::list<std::string>::const_iterator cit = phast_iphreeqc_worker->GetEquilibriumPhasesList().begin();
 				for (; cit != phast_iphreeqc_worker->GetEquilibriumPhasesList().end(); cit++)
 				{
 					eq_set.insert(*cit);
@@ -6231,7 +6231,7 @@ PhreeqcRM::InitialPhreeqc2Module(
 
 		// Use phreeqc_bin to capture InitialPhreeqc definitions
 		this->Get_phreeqc_bin().Clear();
-		this->GetWorkers()[this->nthreads]->Get_PhreeqcPtr()->phreeqc2cxxStorageBin(this->Get_phreeqc_bin());
+        this->GetWorkers()[this->nthreads]->Get_PhreeqcPtr()->phreeqc2cxxStorageBin(this->Get_phreeqc_bin());
 #ifdef USE_MPI
 		if (this->mpi_myself == 0)
 		{
@@ -10242,7 +10242,7 @@ PhreeqcRM::RunCellsThread(int n)
 				{
 					input << "-temp " << phast_iphreeqc_worker->PhreeqcPtr->llnl_temp[0] << ";";
 				}
-				input << "DELETE; -solution " << next << "\n";
+                input << "DELETE; -solution " << next << "\n";
 				if (phast_iphreeqc_worker->RunString(input.str().c_str()) < 0)
 				{
 					this->ErrorMessage(phast_iphreeqc_worker->GetErrorString());
@@ -10279,7 +10279,7 @@ PhreeqcRM::RunCellsThread(int n)
 				{
 					this->ErrorMessage(phast_iphreeqc_worker->GetErrorString());
 					throw PhreeqcRMStop();
-				}
+                }
 			}
 
 			std::vector<int> types;
@@ -10302,7 +10302,7 @@ PhreeqcRM::RunCellsThread(int n)
 			int end = this->end_cell[n];
 #endif
 			// run the cells
-			for (i = start; i <= end; i++)
+            for (i = start; i <= end; i++)
 			{							/* i is count_chem number */
 				int local_chem_mask;
 				bool calculation_success = true;
@@ -10346,7 +10346,7 @@ PhreeqcRM::RunCellsThread(int n)
 					input << "  -start_time " << (this->time - this->time_step) << "\n";
 					input << "  -time_step  " << this->time_step << "\n";
 					input << "  -cells      " << i << "\n";
-					input << "END" << "\n";
+                    input << "END" << "\n";
 					if (phast_iphreeqc_worker->RunString(input.str().c_str()) != 0)
 					{
 						if (this->GetErrorHandlerMode() < 3)
@@ -10375,7 +10375,7 @@ PhreeqcRM::RunCellsThread(int n)
 							line_buff << backward_mapping[i][ib] << " ";
 						}
 						line_buff << "\n";
-						*phast_iphreeqc_worker->Get_out_stream() << line_buff.str();
+                        *phast_iphreeqc_worker->Get_out_stream() << line_buff.str();
 						*phast_iphreeqc_worker->Get_out_stream() << phast_iphreeqc_worker->GetOutputString();
 					}
 
@@ -10386,7 +10386,7 @@ PhreeqcRM::RunCellsThread(int n)
 						std::map< int, CSelectedOutput* >::iterator it = phast_iphreeqc_worker->SelectedOutputMap.begin();
 						for ( ; it != phast_iphreeqc_worker->SelectedOutputMap.end(); it++)
 						{
-							int n_user = it->first;
+                            int n_user = it->first;
 							std::map< int, CSelectedOutput >::iterator ipp_it = phast_iphreeqc_worker->CSelectedOutputMap.find(n_user);
 							assert(it->second->GetRowCount() == 2);
 							if (ipp_it == phast_iphreeqc_worker->CSelectedOutputMap.end())
@@ -11117,8 +11117,8 @@ const int
 PhreeqcRM::GetPPAssemblageCount(void)
 /* ---------------------------------------------------------------------- */
 {
-    auto bin = phreeqc_bin->Get_PPassemblage(1);
-    return bin->Get_pp_assemblage_comps().size();
+    auto bin = this->GetWorkers()[this->nthreads]->Get_PhreeqcPtr()->Get_Rxn_pp_assemblage_map()[1];
+    return bin.Get_pp_assemblage_comps().size();
 }
 
 /* ---------------------------------------------------------------------- */
@@ -11127,8 +11127,8 @@ PhreeqcRM::GetPPAssemblageComps(void)
 /* ---------------------------------------------------------------------- */
 {
     std::vector< std::string > comps;
-    auto bin = phreeqc_bin->Get_PPassemblage(1);
-    for (const auto &name : bin->Get_pp_assemblage_comps())
+    auto bin = this->GetWorkers()[this->nthreads]->Get_PhreeqcPtr()->Get_Rxn_pp_assemblage_map()[1];
+    for (const auto &name : bin.Get_pp_assemblage_comps())
     {
         comps.push_back(name.first);
     }
@@ -11141,7 +11141,7 @@ PhreeqcRM::SetPPAssemblageMoles(const std::vector<double> &moles)
 /* ---------------------------------------------------------------------- */
 {
     IRM_RESULT return_value = IRM_OK;
-    auto bin = phreeqc_bin->Get_PPassemblages();
+    auto bin = this->GetWorkers()[this->nthreads]->Get_PhreeqcPtr()->Get_Rxn_pp_assemblage_map();
     int i = 0;
     for (auto &pp : bin)
     {
@@ -11152,8 +11152,9 @@ PhreeqcRM::SetPPAssemblageMoles(const std::vector<double> &moles)
             j++;
         }
         i++;
-        phreeqc_bin->Set_PPassemblage(i, bin.find(i)->second);
+        // phreeqc_bin->Set_PPassemblage(i, bin.find(i)->second);
     }
+    this->GetWorkers()[this->nthreads]->Get_PhreeqcPtr()->Set_Rxn_pp_assemblage_map(bin);
     return return_value;
 }
 
@@ -11163,7 +11164,7 @@ PhreeqcRM::SetPPAssemblageSI(const std::vector<double> &si)
 /* ---------------------------------------------------------------------- */
 {
     IRM_RESULT return_value = IRM_OK;
-    auto bin = phreeqc_bin->Get_PPassemblages();
+    auto bin = this->GetWorkers()[this->nthreads]->Get_PhreeqcPtr()->Get_Rxn_pp_assemblage_map();
     int i = 0;
     for (auto &pp : bin)
     {
@@ -11175,8 +11176,9 @@ PhreeqcRM::SetPPAssemblageSI(const std::vector<double> &si)
             j++;
         }
         i++;
-        phreeqc_bin->Set_PPassemblage(i, bin.find(i)->second);
+        // phreeqc_bin->Set_PPassemblage(i, bin.find(i)->second);
     }
+    this->GetWorkers()[this->nthreads]->Get_PhreeqcPtr()->Set_Rxn_pp_assemblage_map(bin);
     return return_value;
 }
 #ifdef ORIG

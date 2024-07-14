@@ -43,6 +43,8 @@ extern void WriteYAMLFile_cpp_test();
 
 int main(int argc, char* argv[])
 {
+    Barite_c();
+    return 0;
 	int mpi_tasks;
     int mpi_myself;;
 

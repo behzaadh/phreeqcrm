@@ -1000,7 +1000,7 @@ protected:
 	static size_t InstancesIndex;
 	size_t Index;
 
-	static std::string Version;
+    static std::string Version;
 
 #if defined(_MSC_VER)
 /* reset warning C4251 */

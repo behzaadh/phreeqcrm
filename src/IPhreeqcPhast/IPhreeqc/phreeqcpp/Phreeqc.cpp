@@ -434,6 +434,14 @@ size_t Phreeqc::list_Exchangers(std::list<std::string> &list_exname)
 	}
 	return(list_exname.size());
 }
+
+void Phreeqc::Set_Rxn_pp_assemblage_map(const std::map<int, cxxPPassemblage> &Rxn_pp_assemblage_map)
+{
+    this->Rxn_pp_assemblage_map.clear();
+    for (const auto& entry : Rxn_pp_assemblage_map) {
+        this->Rxn_pp_assemblage_map.insert(entry);
+    }
+}
 Phreeqc::Phreeqc(PHRQ_io *io)
 {
 	user_print = NULL;
